@@ -106,6 +106,7 @@ open class DTCollectionViewDataSource: DTCollectionViewDelegateWrapper, UICollec
                                                                   to: destination)
     }
     
+    #if compiler(>=5.4)
     @available(iOS 14.0, tvOS 10.2, *)
     /// Implementation of `UICollectionViewDataSource` protocol.
     open func indexTitles(for collectionView: UICollectionView) -> [String]? {
@@ -114,7 +115,18 @@ open class DTCollectionViewDataSource: DTCollectionViewDelegateWrapper, UICollec
         }
         return (delegate as? UICollectionViewDataSource)?.indexTitles?(for: collectionView)
     }
+    #else
+    @available(iOS 11.0, tvOS 10.2, *)
+    /// Implementation of `UICollectionViewDataSource` protocol.
+    open func indexTitles(for collectionView: UICollectionView) -> [String]? {
+        if let reaction = collectionViewReactions.first(where: { $0.methodSignature == EventMethodSignature.indexTitlesForCollectionView.rawValue }) {
+            return reaction.performWithArguments((0, 0, 0)) as? [String]
+        }
+        return (delegate as? UICollectionViewDataSource)?.indexTitles?(for: collectionView)
+    }
+    #endif
     
+    #if compiler(>=5.4)
     @available(iOS 14.0, tvOS 10.2, *)
     /// Implementation of `UICollectionViewDataSource` protocol.
     open func collectionView(_ collectionView: UICollectionView, indexPathForIndexTitle title: String, at index: Int) -> IndexPath {
@@ -125,4 +137,16 @@ open class DTCollectionViewDataSource: DTCollectionViewDelegateWrapper, UICollec
                                                                           indexPathForIndexTitle: title,
                                                                           at: index) ?? IndexPath(item: 0, section: 0)
     }
+    #else
+    @available(iOS 11.0, tvOS 10.2, *)
+    /// Implementation of `UICollectionViewDataSource` protocol.
+    open func collectionView(_ collectionView: UICollectionView, indexPathForIndexTitle title: String, at index: Int) -> IndexPath {
+        if let indexPath = performNonCellReaction(.indexPathForIndexTitleAtIndex, argumentOne: title, argumentTwo: index) as? IndexPath {
+            return indexPath
+        }
+        return (delegate as? UICollectionViewDataSource)?.collectionView?(collectionView,
+                                                                          indexPathForIndexTitle: title,
+                                                                          at: index) ?? IndexPath(item: 0, section: 0)
+    }
+    #endif
 }
