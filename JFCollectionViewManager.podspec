@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name     = 'JFCollectionViewManager'
-  s.version      = "7.5.1"
+  s.version      = "7.5.2"
   s.license  = 'MIT'
   s.summary  = 'Protocol-oriented UICollectionView management, powered by generics and associated types.'
   s.homepage = 'https://github.com/DenTelezhkin/DTCollectionViewManager'
